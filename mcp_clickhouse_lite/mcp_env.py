@@ -133,7 +133,7 @@ class ClickHouseConfig:
 
         if missing_vars:
             raise ValueError(
-                f"Missing required environment variables: {', '.join(missing_vars)}"
+                f"(lite) Missing required environment variables : {', '.join(missing_vars)}"
             )
 
 

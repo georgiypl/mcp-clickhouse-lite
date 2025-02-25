@@ -6,9 +6,9 @@ from clickhouse_connect.driver.binding import quote_identifier, format_query_val
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 
-from mcp_clickhouse.mcp_env import config
+from mcp_clickhouse_lite.mcp_env import config
 
-MCP_SERVER_NAME = "mcp-clickhouse"
+MCP_SERVER_NAME = "mcp-clickhouse-lite"
 
 # Configure logging
 logging.basicConfig(
@@ -62,32 +62,32 @@ def list_tables(database: str, like: str = None):
         column_comments[table][col_name] = comment
 
     def get_table_info(table):
-        logger.info(f"Getting schema info for table {database}.{table}")
-        schema_query = f"DESCRIBE TABLE {quote_identifier(database)}.{quote_identifier(table)}"
-        schema_result = client.query(schema_query)
-
-        columns = []
-        column_names = schema_result.column_names
-        for row in schema_result.result_rows:
-            column_dict = {}
-            for i, col_name in enumerate(column_names):
-                column_dict[col_name] = row[i]
-            # Add comment from our pre-fetched comments
-            if table in column_comments and column_dict['name'] in column_comments[table]:
-                column_dict['comment'] = column_comments[table][column_dict['name']]
-            else:
-                column_dict['comment'] = None
-            columns.append(column_dict)
-
-        create_table_query = f"SHOW CREATE TABLE {database}.`{table}`"
-        create_table_result = client.command(create_table_query)
+        # logger.info(f"Getting schema info for table {database}.{table}")
+        # schema_query = f"DESCRIBE TABLE {quote_identifier(database)}.{quote_identifier(table)}"
+        # schema_result = client.query(schema_query)
+        #
+        # columns = []
+        # column_names = schema_result.column_names
+        # for row in schema_result.result_rows:
+        #     column_dict = {}
+        #     for i, col_name in enumerate(column_names):
+        #         column_dict[col_name] = row[i]
+        #     # Add comment from our pre-fetched comments
+        #     if table in column_comments and column_dict['name'] in column_comments[table]:
+        #         column_dict['comment'] = column_comments[table][column_dict['name']]
+        #     else:
+        #         column_dict['comment'] = None
+        #     columns.append(column_dict)
+        #
+        # create_table_query = f"SHOW CREATE TABLE {database}.`{table}`"
+        # create_table_result = client.command(create_table_query)
 
         return {
             "database": database,
             "name": table,
             "comment": table_comments.get(table),
-            "columns": columns,
-            "create_table_query": create_table_result,
+            "columns": column_comments.get(table),
+          #  "create_table_query": create_table_result,
         }
 
     tables = []
